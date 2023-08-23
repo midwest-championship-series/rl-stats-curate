@@ -1,10 +1,12 @@
 "use client"
-
+import { login } from '@/app/services/auth'
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const handleEmailChange = (event: any) => {
     setEmail(event.target.value);
@@ -14,10 +16,17 @@ export default function Login() {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
-    // Perform login logic here, e.g., sending data to an API
-    console.log('Login submitted:', email, password);
+    
+    try {
+      await login(email, password); // Using your login function from services/auth.ts
+      console.log('Logged in successfully');
+      router.push('/players');  // Redirect to the players page after successful login
+    } catch (error) {
+      console.error('Failed to login:', error);
+      // Handle error, maybe show a notification to the user
+    }
   };
   
   return (
