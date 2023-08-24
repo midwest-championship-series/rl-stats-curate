@@ -1,6 +1,6 @@
-// pages/AdminPlayers.js
 import React, { useState, useEffect } from 'react';
-import api from '../app/services/rl-stats'; // Adjust the import path to where your API file is located
+import api from '../app/services/rl-stats';
+import PlayerCard from '@/app/components/player-card';
 
 const AdminPlayers = () => {
   const [players, setPlayers] = useState<any[]>([]);
@@ -32,15 +32,14 @@ const AdminPlayers = () => {
 
   return (
     <div>
-      <h1>Admin Players Edit Tool</h1>
-      <ul>
-        {players.map(player => (
-          <li key={player._id}>
-            {player.screen_name}
-            <button onClick={() => handleEdit(player)}>Edit</button>
-          </li>
+      <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Players</h1>
+      <div className="flex flex-wrap -m-2">
+        {players.map((player) => (
+          <PlayerCard key={player._id} player={player} />
         ))}
-      </ul>
+      </div>
+    </div>
       {selectedPlayer && (
         <div>
           <label>
