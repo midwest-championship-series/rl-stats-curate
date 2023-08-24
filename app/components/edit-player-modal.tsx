@@ -1,14 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Player from '@/app/types/player'
+import ModelEditForm from './model-edit-form';
 
 type EditPlayerModalProps = {
   player: Player;
+  schema: any;
   onClose: () => void;
   onSubmit: (updatedPlayer: Player) => void;
 };
 
-const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ player, onClose, onSubmit }) => {
+const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ player,schema, onClose, onSubmit }) => {
   const [editedPlayer, setEditedPlayer] = useState(player);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose()
+      }
+    };
+
+    // Adding the event listener
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditedPlayer(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -25,27 +43,10 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ player, onClose, onSu
         <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-200">
           X
         </button>
-        <h1 className="p-4 mt-4 text-lg">Edit player: {player.screen_name}</h1>
-        <form onSubmit={handleSubmit} className="p-4 mt-4">
-          {/* Here, add input fields for the various properties of the player, 
-               using handleChange to update state. */}
-          {/* Example input field: */}
-          <div className="mb-4">
-            <label className="block mb-2 text-sm font-bold" htmlFor="screen_name">Screen Name</label>
-            <input
-              type="text"
-              name="screen_name"
-              value={editedPlayer.screen_name}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-            />
-          </div>
-          {/* Add other fields similarly... */}
-          
-          <button type="submit" className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
-            Update
-          </button>
-        </form>
+        <div className="p-4 mt-4">
+        <h1 className="text-lg">Edit player: {player.screen_name}</h1>
+        <ModelEditForm playerSchema={schema} playerData={player} onSubmit={onSubmit}/>
+        </div>
       </div>
     </div>
   );

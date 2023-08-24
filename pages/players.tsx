@@ -7,28 +7,48 @@ import Player from '@/app/types/player';
 const AdminPlayers = () => {
   const [players, setPlayers] = useState<any[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<any>(null);
+  const [schema, setSchema] = useState<any>(null)
 
   useEffect(() => {
     async function fetchPlayers() {
-      const fetchedPlayers = await api.get('players');
+      const fetchedPlayers = await api.get('players', {sort: 'screen_name'});
       setPlayers(fetchedPlayers);
     }
 
     fetchPlayers();
   }, []);
 
+  useEffect(() => {
+    async function fetchSchema() {
+      const modelSchema = await api.get('players/_schema')
+      setSchema(modelSchema)
+    }
+    fetchSchema()
+  }, [])
+
   const handleEdit = (player: Player) => {
+    document.body.style.overflow = 'hidden'
     setSelectedPlayer(player);
   };
 
   const handleCloseModal = () => {
+    document.body.style.overflow = 'auto'
     setSelectedPlayer(null);
   };
 
   const handleUpdatePlayer = (updatedPlayer: Player) => {
-    // Here, you might call an API to update the player in the backend
-    // and then refresh your data or update your local state as needed.
-
+    async function sendPlayerUpdate(data: Player) {
+      try {
+        await api.put(`players/${data._id}`, data)
+        const newPlayers = players.map(player => 
+          player._id === data._id ? data : player
+        );
+        setPlayers(newPlayers);
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    sendPlayerUpdate(updatedPlayer)
     setSelectedPlayer(null);
   };
 
@@ -43,7 +63,7 @@ const AdminPlayers = () => {
       </div>
     </div>
       {selectedPlayer && (
-        <EditPlayerModal player={selectedPlayer} onClose={handleCloseModal} onSubmit={handleUpdatePlayer} />
+        <EditPlayerModal player={selectedPlayer} schema={schema} onClose={handleCloseModal} onSubmit={handleUpdatePlayer} />
       )}
     </div>
   );
