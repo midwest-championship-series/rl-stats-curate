@@ -7,11 +7,12 @@ type PlayerCardProps = {
       email?: string;
       avatar?: string;
     };
+    onClick: () => void;
   };
   
-  const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
+  const PlayerCard: React.FC<PlayerCardProps> = ({ player, onClick }) => {
     return (
-      <div className="bg-white rounded-lg shadow-md p-4 m-2 w-64">
+      <div className="bg-white rounded-lg shadow-md p-4 m-2 w-64 cursor-pointer" onClick={onClick}>
         <div className="relative w-32 h-32 mx-auto">
             <ImageWithFallback
               src={player.avatar}

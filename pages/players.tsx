@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../app/services/rl-stats';
 import PlayerCard from '@/app/components/player-card';
+import EditPlayerModal from '@/app/components/edit-player-modal';
+import Player from '@/app/types/player';
 
 const AdminPlayers = () => {
   const [players, setPlayers] = useState<any[]>([]);
@@ -15,19 +17,19 @@ const AdminPlayers = () => {
     fetchPlayers();
   }, []);
 
-  const handleEdit = (player) => {
+  const handleEdit = (player: Player) => {
     setSelectedPlayer(player);
   };
 
-  const handleSave = async () => {
-    if (selectedPlayer) {
-      await api.put(`players/${selectedPlayer._id}`, selectedPlayer);
-      setSelectedPlayer(null);
-    }
+  const handleCloseModal = () => {
+    setSelectedPlayer(null);
   };
 
-  const handleChange = (field, value) => {
-    setSelectedPlayer((prevState: any) => ({ ...prevState, [field]: value }));
+  const handleUpdatePlayer = (updatedPlayer: Player) => {
+    // Here, you might call an API to update the player in the backend
+    // and then refresh your data or update your local state as needed.
+
+    setSelectedPlayer(null);
   };
 
   return (
@@ -36,23 +38,12 @@ const AdminPlayers = () => {
       <h1 className="text-2xl font-bold mb-4">Players</h1>
       <div className="flex flex-wrap -m-2">
         {players.map((player) => (
-          <PlayerCard key={player._id} player={player} />
+          <PlayerCard key={player._id} player={player} onClick={() => handleEdit(player)} />
         ))}
       </div>
     </div>
       {selectedPlayer && (
-        <div>
-          <label>
-            Screen Name:
-            <input 
-              type="text" 
-              value={selectedPlayer.screen_name} 
-              onChange={e => handleChange('screen_name', e.target.value)}
-            />
-          </label>
-          {/* Similar inputs for other fields like discord_id, email, etc... */}
-          <button onClick={handleSave}>Save Changes</button>
-        </div>
+        <EditPlayerModal player={selectedPlayer} onClose={handleCloseModal} onSubmit={handleUpdatePlayer} />
       )}
     </div>
   );
