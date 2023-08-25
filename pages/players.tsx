@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { SchemaProvider } from '../app/contexts/schema-context';
 import api from '../app/services/rl-stats';
 import PlayerCard from '@/app/components/player-card';
 import EditPlayerModal from '@/app/components/edit-player-modal';
 import Player from '@/app/types/player';
-import { useSchemas } from '@/app/hooks/use-schemas';
+import { useSchema } from '@/app/contexts/schema-context';
 
-const AdminPlayers = () => {
+const AdminPlayersContent = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
-  const schemas = useSchemas(['players', 'teams']);
-
+  const schemas = useSchema();
+  
   useEffect(() => {
     async function fetchPlayers() {
       try {
@@ -44,6 +45,7 @@ const AdminPlayers = () => {
   };
 
   return (
+    <SchemaProvider>
     <div>
       <div className="container mx-auto p-6">
         <h1 className="text-2xl font-bold mb-4">Players</h1>
@@ -57,6 +59,15 @@ const AdminPlayers = () => {
         <EditPlayerModal player={selectedPlayer} schema={schemas.players} onClose={handleCloseModal} onSubmit={handleUpdatePlayer} />
       )}
     </div>
+    </SchemaProvider>
+  );
+}
+
+const AdminPlayers = () => {
+  return (
+    <SchemaProvider>
+      <AdminPlayersContent />
+    </SchemaProvider>
   );
 }
 
