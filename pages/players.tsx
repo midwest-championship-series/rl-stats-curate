@@ -3,67 +3,58 @@ import api from '../app/services/rl-stats';
 import PlayerCard from '@/app/components/player-card';
 import EditPlayerModal from '@/app/components/edit-player-modal';
 import Player from '@/app/types/player';
+import { useSchemas } from '@/app/hooks/use-schemas';
 
 const AdminPlayers = () => {
-  const [players, setPlayers] = useState<any[]>([]);
-  const [selectedPlayer, setSelectedPlayer] = useState<any>(null);
-  const [schema, setSchema] = useState<any>(null)
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const schemas = useSchemas(['players', 'teams']);
 
   useEffect(() => {
     async function fetchPlayers() {
-      const fetchedPlayers = await api.get('players', {sort: 'screen_name'});
-      setPlayers(fetchedPlayers);
+      try {
+        const fetchedPlayers = await api.get('players', {sort: 'screen_name'});
+        setPlayers(fetchedPlayers);
+      } catch (error) {
+        console.error("Error fetching players:", error);
+      }
     }
-
     fetchPlayers();
   }, []);
 
-  useEffect(() => {
-    async function fetchSchema() {
-      const modelSchema = await api.get('players/_schema')
-      setSchema(modelSchema)
-    }
-    fetchSchema()
-  }, [])
-
   const handleEdit = (player: Player) => {
-    document.body.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden';
     setSelectedPlayer(player);
   };
 
   const handleCloseModal = () => {
-    document.body.style.overflow = 'auto'
+    document.body.style.overflow = 'auto';
     setSelectedPlayer(null);
   };
 
-  const handleUpdatePlayer = (updatedPlayer: Player) => {
-    async function sendPlayerUpdate(data: Player) {
-      try {
-        await api.put(`players/${data._id}`, data)
-        const newPlayers = players.map(player => 
-          player._id === data._id ? data : player
-        );
-        setPlayers(newPlayers);
-      } catch (err) {
-        console.error(err)
-      }
+  const handleUpdatePlayer = async (updatedPlayer: Player) => {
+    try {
+      await api.put(`players/${updatedPlayer._id}`, updatedPlayer);
+      const newPlayers = players.map(player => player._id === updatedPlayer._id ? updatedPlayer : player);
+      setPlayers(newPlayers);
+      setSelectedPlayer(null);
+    } catch (err) {
+      console.error(err);
     }
-    sendPlayerUpdate(updatedPlayer)
-    setSelectedPlayer(null);
   };
 
   return (
     <div>
       <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Players</h1>
-      <div className="flex flex-wrap -m-2">
-        {players.map((player) => (
-          <PlayerCard key={player._id} player={player} onClick={() => handleEdit(player)} />
-        ))}
+        <h1 className="text-2xl font-bold mb-4">Players</h1>
+        <div className="flex flex-wrap -m-2">
+          {players.map((player) => (
+            <PlayerCard key={player._id} player={player} onClick={() => handleEdit(player)} />
+          ))}
+        </div>
       </div>
-    </div>
       {selectedPlayer && (
-        <EditPlayerModal player={selectedPlayer} schema={schema} onClose={handleCloseModal} onSubmit={handleUpdatePlayer} />
+        <EditPlayerModal player={selectedPlayer} schema={schemas.players} onClose={handleCloseModal} onSubmit={handleUpdatePlayer} />
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import 'tailwindcss/tailwind.css';
 
 type PlayerCardProps = {
     player: {
-      screen_name: string;
+      screen_name?: string;
       email?: string;
       avatar?: string;
     };

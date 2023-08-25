@@ -11,6 +11,7 @@ export const renderInputField = (key: string, schemaItem: any, formData: any, se
 
   switch (schemaItem.type) {
     case 'string':
+    case 'objectId':
       inputComponent = (
         <input
           type="text"
@@ -45,7 +46,7 @@ export const renderInputField = (key: string, schemaItem: any, formData: any, se
 
   return (
     <div key={key}>
-      <label className="block mb-2 text-sm font-bold" htmlFor={key}>{key}</label>
+      <label className="block mb-2 text-sm font-bold" htmlFor={key}>{key} ({schemaItem.type})</label>
       <div className='mb-4'>
         {inputComponent}
       </div>
