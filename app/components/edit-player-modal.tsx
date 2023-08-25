@@ -10,8 +10,6 @@ type EditPlayerModalProps = {
 };
 
 const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ player,schema, onClose, onSubmit }) => {
-  const [editedPlayer, setEditedPlayer] = useState(player);
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -19,23 +17,12 @@ const EditPlayerModal: React.FC<EditPlayerModalProps> = ({ player,schema, onClos
       }
     };
 
-    // Adding the event listener
     window.addEventListener("keydown", handleKeyDown);
 
-    // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditedPlayer(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(editedPlayer);
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
