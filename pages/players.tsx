@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect } from 'react';
 import { SchemaProvider } from '../app/contexts/schema-context';
 import api from '../app/services/rl-stats';

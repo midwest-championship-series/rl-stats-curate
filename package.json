@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "connect": "ssh -i ~/.aws/rl-stats-23.pem ec2-user@ec2-54-81-23-77.compute-1.amazonaws.com"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
